@@ -1,6 +1,6 @@
 'use client';
 import { useEffect, useState } from 'react';
-import { DollarSign, FolderOpen, FileText, Users, Plus, ArrowRight } from 'lucide-react';
+import { DollarSign, FolderOpen, FileText, Users, Plus, ArrowRight, Sparkles } from 'lucide-react';
 import { getAppData } from '@/lib/storage';
 import { AppData } from '@/lib/types';
 import MetricCard from '@/components/MetricCard';
@@ -108,6 +108,29 @@ export default function Dashboard() {
             </CardContent>
           </Card>
         </div>
+
+        <Card>
+          <CardHeader className="flex flex-row items-center justify-between">
+            <CardTitle className="flex items-center gap-2"><Sparkles className="w-5 h-5 text-indigo-600" /> In-Product Conversion Prompts</CardTitle>
+            <Link href="/compare">
+              <Button variant="ghost" size="sm">View proof <ArrowRight className="w-3 h-3 ml-1" /></Button>
+            </Link>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+              {[
+                { step: 'Proposal Sent', text: 'Generate contract + invoice in one flow to cut setup time.' },
+                { step: 'Contract Signed', text: 'Launch payment-ready invoice now and reduce time-to-cash.' },
+                { step: 'Invoice Viewed', text: 'Send one-tap payment reminder to improve conversion.' },
+              ].map(({ step, text }) => (
+                <div key={step} className="p-4 rounded-lg border border-gray-200 bg-gray-50">
+                  <p className="text-xs uppercase tracking-wide text-gray-500 font-semibold">{step}</p>
+                  <p className="text-sm text-gray-700 mt-1">{text}</p>
+                </div>
+              ))}
+            </div>
+          </CardContent>
+        </Card>
       </main>
     </div>
   );
