@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, FolderKanban, FileText, FileCheck, Calendar, TrendingUp, Globe, Settings, Zap } from 'lucide-react';
+import { LayoutDashboard, Users, FolderKanban, FileText, FileCheck, Calendar, TrendingUp, Globe, Settings, Zap, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -13,6 +13,7 @@ const navItems = [
   { href: '/scheduling', label: 'Scheduling', icon: Calendar },
   { href: '/finances', label: 'Finances', icon: TrendingUp },
   { href: '/portal', label: 'Client Portal', icon: Globe },
+  { href: '/strategy', label: 'Growth Strategy', icon: Rocket },
 ];
 
 export default function Sidebar() {
