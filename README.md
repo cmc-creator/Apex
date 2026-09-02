@@ -4,7 +4,7 @@ Apex is a Next.js CRM dashboard for freelancer operations, including clients, pr
 
 ## Current status
 
-This repo is in a strong frontend prototype state: it builds successfully and passes lint checks. However, it is still using mock local data and browser storage, so it is not yet production-ready for real customer or business data.
+This repo is in a strong frontend prototype state: it builds successfully and passes lint checks. It still has a mock-data fallback for local development, but it now includes a Supabase-ready backend layer so it can be migrated toward production without rewriting the whole app.
 
 ## Quick start
 
@@ -30,27 +30,48 @@ Copy `.env.example` to `.env.local` and replace placeholders before deployment.
 cp .env.example .env.local
 ```
 
-## Launch-readiness notes
+Required values for Supabase-enabled setup:
 
-Before going live, you still need to complete the following:
+```bash
+NEXT_PUBLIC_SUPABASE_URL=https://your-project.supabase.co
+NEXT_PUBLIC_SUPABASE_ANON_KEY=your-anon-key
+SUPABASE_SERVICE_ROLE_KEY=your-service-role-key
+```
 
-- Replace localStorage/mock data with a real database and API layer
+## Supabase-ready backend scaffold
+
+The project now includes:
+
+- `src/lib/supabase.ts` for client creation and environment checks
+- `src/lib/crm-data.ts` for data access with mock fallback behavior
+- `src/app/api/clients/route.ts` for client list/create API routes
+- `src/app/api/projects/route.ts` for project list/create API routes
+- `src/app/api/invoices/route.ts` for invoice list/create API routes
+- `src/app/api/health/route.ts` for backend readiness checks
+
+If Supabase environment variables are present, these APIs can target Supabase tables. If they are absent, the app falls back to the existing mock dataset so the UI continues to run locally.
+
+## Launch-readiness checklist
+
+Before going live, complete the following:
+
+- Replace the local mock fallback with real Supabase tables and row-level security
 - Add authentication and role-based access control
 - Add server-side validation, permissions, and audit logs
 - Configure production secret management and deployment environment variables
-- Add automated tests for critical user flows
+- Add automated tests for critical flows
 - Add monitoring, logging, error tracking, and uptime checks
 - Review privacy, retention, and compliance requirements for customer data
 
 ## Recommended deployment path
 
-- Deploy to Vercel or another managed Next.js host
-- Set production environment values in the host dashboard
-- Connect a database and API backend before enabling live customer data
+- Deploy to Vercel
+- Set production environment variables in the Vercel dashboard
+- Configure Supabase auth and Postgres schema before enabling real data
 - Validate the app with a staging deployment before production launch
 
 ## App structure
 
 - `src/app` — route pages and app shell
 - `src/components` — reusable UI and data views
-- `src/lib` — mock data, storage helpers, and utilities
+- `src/lib` — mock data, storage helpers, Supabase helpers, and utilities
