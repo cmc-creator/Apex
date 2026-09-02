@@ -1,36 +1,56 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Apex
 
-## Getting Started
+Apex is a Next.js CRM dashboard for freelancer operations, including clients, projects, invoices, contracts, scheduling, and finance workflows.
 
-First, run the development server:
+## Current status
+
+This repo is in a strong frontend prototype state: it builds successfully and passes lint checks. However, it is still using mock local data and browser storage, so it is not yet production-ready for real customer or business data.
+
+## Quick start
 
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open http://localhost:3000.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Production validation
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm run build
+npm run lint
+```
 
-## Learn More
+## Environment setup
 
-To learn more about Next.js, take a look at the following resources:
+Copy `.env.example` to `.env.local` and replace placeholders before deployment.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+cp .env.example .env.local
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+## Launch-readiness notes
 
-## Deploy on Vercel
+Before going live, you still need to complete the following:
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+- Replace localStorage/mock data with a real database and API layer
+- Add authentication and role-based access control
+- Add server-side validation, permissions, and audit logs
+- Configure production secret management and deployment environment variables
+- Add automated tests for critical user flows
+- Add monitoring, logging, error tracking, and uptime checks
+- Review privacy, retention, and compliance requirements for customer data
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## Recommended deployment path
+
+- Deploy to Vercel or another managed Next.js host
+- Set production environment values in the host dashboard
+- Connect a database and API backend before enabling live customer data
+- Validate the app with a staging deployment before production launch
+
+## App structure
+
+- `src/app` — route pages and app shell
+- `src/components` — reusable UI and data views
+- `src/lib` — mock data, storage helpers, and utilities
