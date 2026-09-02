@@ -1,8 +1,10 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { useEffect, useState } from 'react';
 import { LayoutDashboard, Users, FolderKanban, FileText, FileCheck, Calendar, TrendingUp, Globe, Settings, Zap, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { AppUser, getCurrentUser } from '@/lib/auth';
 
 const navItems = [
   { href: '/', label: 'Dashboard', icon: LayoutDashboard },
@@ -18,6 +20,19 @@ const navItems = [
 
 export default function Sidebar() {
   const pathname = usePathname();
+  const [user, setUser] = useState<AppUser | null>(null);
+
+  useEffect(() => {
+    setUser(getCurrentUser());
+  }, [pathname]);
+
+  const initials = user?.name
+    ?.split(' ')
+    .map(part => part[0])
+    .join('')
+    .slice(0, 2)
+    .toUpperCase() ?? 'JD';
+
   return (
     <aside className="fixed inset-y-0 left-0 w-64 bg-indigo-900 flex flex-col z-30">
       <div className="p-6">
@@ -58,13 +73,19 @@ export default function Sidebar() {
         </Link>
         <div className="flex items-center gap-3 px-3 py-2.5 mt-1">
           <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-medium">
-            JD
+            {initials}
           </div>
           <div>
-            <p className="text-white text-sm font-medium">John Doe</p>
-            <p className="text-indigo-300 text-xs">Freelancer</p>
+            <p className="text-white text-sm font-medium">{user?.name ?? 'Guest user'}</p>
+            <p className="text-indigo-300 text-xs">{user ? user.role : 'Not signed in'}</p>
           </div>
         </div>
+        <Link
+          href={user ? '/settings' : '/login'}
+          className="mt-2 block w-full rounded-lg border border-indigo-700 px-3 py-2 text-center text-xs font-medium text-indigo-100 hover:bg-indigo-800"
+        >
+          {user ? 'Manage account' : 'Sign in'}
+        </Link>
       </div>
     </aside>
   );

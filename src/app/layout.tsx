@@ -2,6 +2,7 @@ import type { Metadata } from 'next';
 import './globals.css';
 import Sidebar from '@/components/Sidebar';
 import AIAssistant from '@/components/AIAssistant';
+import AuthGate from '@/components/AuthGate';
 
 export const metadata: Metadata = {
   title: 'Apex CRM - Freelancer Management',
@@ -15,7 +16,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
         <div className="flex min-h-screen bg-gray-50">
           <Sidebar />
           <div className="flex-1 ml-64 flex flex-col min-h-screen">
-            {children}
+            <AuthGate>{children}</AuthGate>
           </div>
         </div>
         <AIAssistant />
