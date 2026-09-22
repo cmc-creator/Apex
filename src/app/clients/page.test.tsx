@@ -2,15 +2,9 @@
 import { cleanup, fireEvent, render, screen } from '@testing-library/react';
 import { afterEach, vi, describe, it, expect } from 'vitest';
 import ClientsPage from './page';
-import { mockData } from '@/lib/data';
-
-const createClient = vi.hoisted(() => vi.fn((input) => ({ ...input, id: 'new-client', createdAt: '2026-01-01', lastContact: '2026-01-01', totalRevenue: 0, communicationHistory: [] })));
-vi.mock('@/lib/storage', () => ({ getAppData: vi.fn(() => mockData), createClient }));
-vi.mock('@/components/Header', () => ({ default: ({ title, subtitle, action }: { title: string; subtitle: string; action?: { label: string; onClick: () => void } }) => <header><h1>{title}</h1><p>{subtitle}</p>{action && <button onClick={action.onClick}>{action.label}</button>}</header> }));
-vi.mock('@/components/PipelineBoard', () => ({ default: () => <div>Pipeline Board Mock</div> }));
-vi.mock('next/link', () => ({ default: ({ href, children }: { href: string; children: React.ReactNode }) => <a href={href}>{children}</a> }));
-
-describe('Clients page', () => { afterEach(() => cleanup());
-  it('renders clients and supports search filtering', async () => { render(<ClientsPage />); expect(await screen.findByText('Sarah Mitchell')).toBeTruthy(); fireEvent.change(screen.getByPlaceholderText('Search clients...'), { target: { value: 'zzzz-not-found' } }); expect(screen.getByText('No clients found')).toBeTruthy(); });
-  it('creates a client from the workspace form', async () => { render(<ClientsPage />); fireEvent.click((await screen.findAllByText('New client'))[0]); fireEvent.change(screen.getByPlaceholderText('Client name *'), { target: { value: 'Nyx Client' } }); fireEvent.change(screen.getByPlaceholderText('Email *'), { target: { value: 'hello@nyx.test' } }); fireEvent.click(screen.getByRole('button', { name: 'Create client' })); expect(createClient).toHaveBeenCalledWith(expect.objectContaining({ name: 'Nyx Client', email: 'hello@nyx.test' })); expect(await screen.findByText('Nyx Client')).toBeTruthy(); });
-});
+vi.mock('next/navigation', () => ({ useRouter: () => router }));
+vi.mock('@/components/Header', () => ({ default: ({ title, action }: { title: string; action?: { label: string; onClick: () => void } }) => <header><h1>{title}</h1>{action && <button onClick={action.onClick}>{action.label}</button>}</header> }));
+const router = vi.hoisted(() => ({ replace: vi.fn() }));
+const fetchMock = vi.fn(); global.fetch = fetchMock;
+afterEach(() => { cleanup(); fetchMock.mockReset(); });
+describe('Clients page', () => { it('shows persisted clients returned by the API', async () => { fetchMock.mockResolvedValueOnce({ status: 200, json: async () => ({ clients: [{ id: '1', name: 'Nyx Client', company: 'Studio', email: 'hello@nyx.test', status: 'lead', tags: [] }] }) }); render(<ClientsPage />); expect(await screen.findByText('Nyx Client')).toBeTruthy(); }); it('posts a new client to the API', async () => { fetchMock.mockResolvedValueOnce({ status: 200, json: async () => ({ clients: [] }) }).mockResolvedValueOnce({ ok: true, json: async () => ({ client: { id: '2', name: 'New Client', company: '', email: 'new@nyx.test', status: 'lead', tags: [] } }) }); render(<ClientsPage />); fireEvent.click((await screen.findAllByText('New client'))[0]); fireEvent.change(screen.getByPlaceholderText('Client name'), { target: { value: 'New Client' } }); fireEvent.change(screen.getByPlaceholderText('Email'), { target: { value: 'new@nyx.test' } }); fireEvent.click(screen.getByRole('button', { name: 'Save client' })); expect(await screen.findByText('New Client')).toBeTruthy(); expect(fetchMock).toHaveBeenLastCalledWith('/api/clients', expect.objectContaining({ method: 'POST' })); }); });
