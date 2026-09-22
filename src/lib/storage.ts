@@ -3,15 +3,27 @@ import { mockData } from './data';
 
 const STORAGE_KEY = 'apex_crm_data';
 
+export const emptyAppData: AppData = {
+  clients: [],
+  projects: [],
+  invoices: [],
+  contracts: [],
+  meetings: [],
+  expenses: [],
+};
+
 export function getAppData(): AppData {
-  if (typeof window === 'undefined') return mockData;
+  if (typeof window === 'undefined') return emptyAppData;
   try {
     const stored = localStorage.getItem(STORAGE_KEY);
-    if (stored) return JSON.parse(stored);
-    saveAppData(mockData);
-    return mockData;
+    if (stored) {
+      const parsed = JSON.parse(stored) as AppData;
+      if (!isLegacySampleData(parsed)) return parsed;
+    }
+    saveAppData(emptyAppData);
+    return emptyAppData;
   } catch {
-    return mockData;
+    return emptyAppData;
   }
 }
 
@@ -44,3 +56,17 @@ export function updateInvoice(id: string, updates: Partial<import('./types').Inv
   saveAppData(data);
   return data;
 }
+
+function isLegacySampleData(data: AppData): boolean {
+  const sampleClientIds = new Set(['client-1', 'client-2', 'client-3', 'client-4', 'client-5', 'client-6', 'client-7']);
+  return data.clients.length === sampleClientIds.size && data.clients.every((client) => sampleClientIds.has(client.id));
+}
+
+export function resetAppData(): AppData {
+  const empty = structuredClone(emptyAppData);
+  saveAppData(empty);
+  return empty;
+}
+
+// Exported only for component tests and visual development; production startup uses emptyAppData.
+export { mockData };

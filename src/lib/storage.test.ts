@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mockData } from './data';
-import { getAppData, updateClient } from './storage';
+import { emptyAppData, getAppData, resetAppData, updateClient } from './storage';
 
 const STORAGE_KEY = 'apex_crm_data';
 
@@ -55,29 +55,37 @@ describe('storage', () => {
     });
   });
 
-  it('returns mock data and seeds storage when storage is empty', () => {
+  it('starts an empty workspace and seeds storage when storage is empty', () => {
     const data = getAppData();
 
-    expect(data).toEqual(mockData);
+    expect(data).toEqual(emptyAppData);
     expect(globalThis.localStorage.getItem(STORAGE_KEY)).toBeTruthy();
   });
 
-  it('falls back to mock data when stored payload is invalid', () => {
+  it('falls back to an empty workspace when stored payload is invalid', () => {
     globalThis.localStorage.setItem(STORAGE_KEY, '{not-json');
 
     const data = getAppData();
 
-    expect(data).toEqual(mockData);
+    expect(data).toEqual(emptyAppData);
+  });
+
+  it('resets local records to an empty workspace', () => {
+    globalThis.localStorage.setItem(STORAGE_KEY, JSON.stringify(mockData));
+
+    expect(resetAppData()).toEqual(emptyAppData);
   });
 
   it('updates client and persists updated payload', () => {
-    globalThis.localStorage.setItem(STORAGE_KEY, JSON.stringify(mockData));
+    const importedData = structuredClone(mockData);
+    importedData.clients[0].id = 'imported-client-1';
+    globalThis.localStorage.setItem(STORAGE_KEY, JSON.stringify(importedData));
 
-    const updated = updateClient('client-1', { name: 'Updated Name' });
+    const updated = updateClient('imported-client-1', { name: 'Updated Name' });
 
-    expect(updated.clients.find(c => c.id === 'client-1')?.name).toBe('Updated Name');
+    expect(updated.clients.find(c => c.id === 'imported-client-1')?.name).toBe('Updated Name');
 
     const persisted = JSON.parse(globalThis.localStorage.getItem(STORAGE_KEY) || '{}');
-    expect(persisted.clients.find((c: { id: string; name: string }) => c.id === 'client-1')?.name).toBe('Updated Name');
+    expect(persisted.clients.find((c: { id: string; name: string }) => c.id === 'imported-client-1')?.name).toBe('Updated Name');
   });
 });
