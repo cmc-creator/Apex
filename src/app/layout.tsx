@@ -12,9 +12,9 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <div className="flex min-h-screen bg-gray-50">
+        <div className="flex min-h-screen bg-transparent">
           <Sidebar />
-          <div className="flex-1 ml-64 flex flex-col min-h-screen">
+          <div className="flex-1 ml-72 flex flex-col min-h-screen">
             {children}
           </div>
         </div>
