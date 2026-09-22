@@ -8,4 +8,4 @@ CREATE INDEX IF NOT EXISTS nyx_clients_workspace_idx ON nyx_clients(workspace_id
 let ready: Promise<void> | undefined;
 type Db = { query: (query: string, params?: unknown[]) => Promise<Record<string, unknown>[]> };
 export function sql(): Db { const url = process.env.DATABASE_URL; if (!url) throw new Error('NyxApex database is not configured.'); return neon(url) as unknown as Db; }
-export async function ensureSchema(): Promise<void> { if (!ready) ready = sql().query(schema).then(() => undefined); return ready; }
+export async function ensureSchema(): Promise<void> { if (!ready) ready = Promise.all(schema.split(';').map((statement) => statement.trim()).filter(Boolean).map((statement) => sql().query(statement))).then(() => undefined); return ready; }
