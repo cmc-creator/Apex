@@ -3,15 +3,24 @@
 @tailwind utilities;
 
 :root {
-  --canvas: #f8f7f4;
-  --ink: #262624;
-  --muted: #6f6d67;
-  --line: #e8e5df;
-  --brand: #365d59;
-  --brand-soft: #e9f0ee;
-  --peach: #f7e6d5;
+  --canvas: #f6f5f1;
+  --surface: #fffeff;
+  --ink: #182321;
+  --muted: #68736f;
+  --line: #e2e4df;
+  --brand: #1d5a51;
+  --brand-deep: #123b35;
+  --brand-soft: #e5efeb;
+  --gold: #d7b475;
+  --peach: #f3ded0;
 }
 
 * { box-sizing: border-box; }
-body { background: var(--canvas); color: var(--ink); }
-::selection { background: #cfe0dc; }
+html { background: var(--canvas); }
+body { min-height: 100vh; background: radial-gradient(circle at 74% -15%, #e6efeb 0, transparent 30rem), var(--canvas); color: var(--ink); }
+::selection { background: #c8dfd7; }
+
+@layer utilities {
+  .eyebrow { @apply text-[11px] font-semibold uppercase tracking-[0.18em]; color: var(--muted); }
+  .premium-card { @apply rounded-2xl border bg-white/80 shadow-sm backdrop-blur; border-color: var(--line); }
+}
