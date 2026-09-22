@@ -1,138 +1,28 @@
 'use client';
-import { useEffect, useState } from 'react';
-import { getAppData } from '@/lib/storage';
-import { Client } from '@/lib/types';
+import { FormEvent, useEffect, useState } from 'react';
+import { createClient, getAppData } from '@/lib/storage';
+import { Client, ClientStatus } from '@/lib/types';
 import Header from '@/components/Header';
 import PipelineBoard from '@/components/PipelineBoard';
 import { Card, CardContent } from '@/components/ui/card';
 import { Avatar, AvatarFallback } from '@/components/ui/avatar';
 import { formatCurrency, formatDate, getInitials, getStatusColor } from '@/lib/utils';
 import { cn } from '@/lib/utils';
-import { LayoutGrid, List, Mail, Phone } from 'lucide-react';
+import { LayoutGrid, List, Mail, Phone, Plus, UserRoundPlus } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
+import { Textarea } from '@/components/ui/textarea';
+import { Select } from '@/components/ui/select';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import Link from 'next/link';
 
+const statuses: Array<'all' | ClientStatus> = ['all', 'lead', 'proposal', 'negotiating', 'won', 'lost'];
+const blankForm = { name: '', company: '', email: '', phone: '', address: '', tags: '', notes: '', status: 'lead' as ClientStatus };
+
 export default function ClientsPage() {
-  const [clients, setClients] = useState<Client[]>([]);
-  const [view, setView] = useState<'list' | 'pipeline'>('list');
-  const [search, setSearch] = useState('');
-  const [statusFilter, setStatusFilter] = useState('all');
-
-  useEffect(() => {
-    const data = getAppData();
-    setClients(data.clients);
-  }, []);
-
-  const filtered = clients.filter(c => {
-    const matchSearch = c.name.toLowerCase().includes(search.toLowerCase()) ||
-      c.company.toLowerCase().includes(search.toLowerCase());
-    const matchStatus = statusFilter === 'all' || c.status === statusFilter;
-    return matchSearch && matchStatus;
-  });
-
-  const statuses = ['all', 'lead', 'proposal', 'negotiating', 'won', 'lost'];
-
-  return (
-    <div className="flex-1">
-      <Header title="Clients" subtitle={`${clients.length} total clients`} />
-
-      <main className="p-6 space-y-4">
-        <div className="flex items-center gap-3 flex-wrap">
-          <Input
-            placeholder="Search clients..."
-            value={search}
-            onChange={e => setSearch(e.target.value)}
-            className="w-64"
-          />
-          <div className="flex gap-1">
-            {statuses.map(s => (
-              <button
-                key={s}
-                onClick={() => setStatusFilter(s)}
-                className={cn(
-                  'px-3 py-1.5 rounded-md text-sm font-medium capitalize transition-colors',
-                  statusFilter === s
-                    ? 'bg-indigo-600 text-white'
-                    : 'bg-white text-gray-600 border border-gray-200 hover:bg-gray-50'
-                )}
-              >
-                {s.replace('_', ' ')}
-              </button>
-            ))}
-          </div>
-          <div className="ml-auto flex items-center gap-2">
-            <Button
-              variant={view === 'list' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setView('list')}
-            >
-              <List className="w-4 h-4 mr-1" /> List
-            </Button>
-            <Button
-              variant={view === 'pipeline' ? 'default' : 'outline'}
-              size="sm"
-              onClick={() => setView('pipeline')}
-            >
-              <LayoutGrid className="w-4 h-4 mr-1" /> Pipeline
-            </Button>
-          </div>
-        </div>
-
-        {view === 'pipeline' ? (
-          <PipelineBoard clients={filtered} />
-        ) : (
-          <div className="space-y-2">
-            {filtered.map(client => (
-              <Link key={client.id} href={`/clients/${client.id}`}>
-                <Card className="hover:shadow-md transition-shadow cursor-pointer">
-                  <CardContent className="p-4">
-                    <div className="flex items-center gap-4">
-                      <Avatar className="w-12 h-12 shrink-0">
-                        <AvatarFallback className="text-base">{getInitials(client.name)}</AvatarFallback>
-                      </Avatar>
-                      <div className="flex-1 min-w-0">
-                        <div className="flex items-center gap-2">
-                          <p className="font-semibold text-gray-900">{client.name}</p>
-                          <span className={cn('text-xs px-2 py-0.5 rounded-full font-medium', getStatusColor(client.status))}>
-                            {client.status}
-                          </span>
-                        </div>
-                        <p className="text-sm text-gray-500">{client.company}</p>
-                        <div className="flex items-center gap-4 mt-1">
-                          <span className="flex items-center gap-1 text-xs text-gray-400">
-                            <Mail className="w-3 h-3" /> {client.email}
-                          </span>
-                          <span className="flex items-center gap-1 text-xs text-gray-400">
-                            <Phone className="w-3 h-3" /> {client.phone}
-                          </span>
-                        </div>
-                      </div>
-                      <div className="text-right shrink-0">
-                        <p className="font-semibold text-gray-900">{formatCurrency(client.totalRevenue)}</p>
-                        <p className="text-xs text-gray-400">Last contact: {formatDate(client.lastContact)}</p>
-                        <div className="flex gap-1 mt-1 justify-end">
-                          {client.tags.slice(0, 3).map(tag => (
-                            <span key={tag} className="text-xs bg-indigo-50 text-indigo-700 px-1.5 py-0.5 rounded">
-                              {tag}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    </div>
-                  </CardContent>
-                </Card>
-              </Link>
-            ))}
-            {filtered.length === 0 && (
-              <div className="text-center py-16 text-gray-500">
-                <p className="text-lg font-medium">No clients found</p>
-                <p className="text-sm mt-1">Try adjusting your search or filters</p>
-              </div>
-            )}
-          </div>
-        )}
-      </main>
-    </div>
-  );
+  const [clients, setClients] = useState<Client[]>([]); const [view, setView] = useState<'list' | 'pipeline'>('list'); const [search, setSearch] = useState(''); const [statusFilter, setStatusFilter] = useState<'all' | ClientStatus>('all'); const [open, setOpen] = useState(false); const [form, setForm] = useState(blankForm); const [error, setError] = useState<string | null>(null);
+  useEffect(() => { setClients(getAppData().clients); }, []);
+  const filtered = clients.filter((c) => (c.name.toLowerCase().includes(search.toLowerCase()) || c.company.toLowerCase().includes(search.toLowerCase())) && (statusFilter === 'all' || c.status === statusFilter));
+  function saveClient(event: FormEvent<HTMLFormElement>): void { event.preventDefault(); setError(null); if (!form.name.trim() || !form.email.trim()) { setError('Client name and email are required.'); return; } const client = createClient({ name: form.name.trim(), company: form.company.trim() || 'Independent', email: form.email.trim(), phone: form.phone.trim(), address: form.address.trim(), tags: form.tags.split(',').map((tag) => tag.trim()).filter(Boolean), notes: form.notes.trim(), status: form.status }); setClients((current) => [client, ...current]); setForm(blankForm); setOpen(false); }
+  return <div className="flex-1"><Header title="Relationships" subtitle={`${clients.length} client${clients.length === 1 ? '' : 's'} in your workspace`} action={{ label: 'New client', onClick: () => setOpen(true) }} /><main className="mx-auto max-w-7xl space-y-5 p-6 lg:p-9"><div className="flex flex-wrap items-center gap-3"><Input placeholder="Search clients..." value={search} onChange={(e) => setSearch(e.target.value)} className="w-64" /><div className="flex flex-wrap gap-1">{statuses.map((status) => <button key={status} onClick={() => setStatusFilter(status)} className={cn('rounded-lg px-3 py-1.5 text-sm font-medium capitalize transition-colors', statusFilter === status ? 'bg-indigo-600 text-white' : 'border border-gray-200 bg-white text-gray-600 hover:bg-gray-50')}>{status}</button>)}</div><div className="ml-auto flex gap-2"><Button variant={view === 'list' ? 'default' : 'outline'} size="sm" onClick={() => setView('list')}><List className="mr-1 h-4 w-4" />List</Button><Button variant={view === 'pipeline' ? 'default' : 'outline'} size="sm" onClick={() => setView('pipeline')}><LayoutGrid className="mr-1 h-4 w-4" />Pipeline</Button></div></div>{view === 'pipeline' ? <PipelineBoard clients={filtered} /> : filtered.length ? <div className="space-y-2">{filtered.map((client) => <Link key={client.id} href={`/clients/${client.id}`}><Card className="cursor-pointer transition-shadow hover:shadow-md"><CardContent className="p-4"><div className="flex items-center gap-4"><Avatar className="h-12 w-12 shrink-0"><AvatarFallback className="text-base">{getInitials(client.name)}</AvatarFallback></Avatar><div className="min-w-0 flex-1"><div className="flex items-center gap-2"><p className="font-semibold text-gray-900">{client.name}</p><span className={cn('rounded-full px-2 py-0.5 text-xs font-medium', getStatusColor(client.status))}>{client.status}</span></div><p className="text-sm text-gray-500">{client.company}</p><div className="mt-1 flex gap-4"><span className="flex items-center gap-1 text-xs text-gray-400"><Mail className="h-3 w-3" />{client.email}</span><span className="flex items-center gap-1 text-xs text-gray-400"><Phone className="h-3 w-3" />{client.phone || 'No phone'}</span></div></div><div className="text-right"><p className="font-semibold text-gray-900">{formatCurrency(client.totalRevenue)}</p><p className="text-xs text-gray-400">Last contact: {formatDate(client.lastContact)}</p></div></div></CardContent></Card></Link>)}</div> : <div className="rounded-2xl border border-dashed border-gray-300 bg-white p-14 text-center"><UserRoundPlus className="mx-auto h-10 w-10 text-indigo-500" /><h2 className="mt-4 text-xl font-semibold">No clients found</h2><p className="mx-auto mt-2 max-w-md text-sm text-gray-500">Create your first client to begin tracking opportunities, delivery, and revenue in one place.</p><Button className="mt-6" onClick={() => setOpen(true)}><Plus className="mr-2 h-4 w-4" />Create client</Button></div>}</main><Dialog open={open} onOpenChange={setOpen}><DialogContent><DialogHeader><DialogTitle>New client</DialogTitle><DialogDescription>Add the relationship details you need to begin.</DialogDescription></DialogHeader><form className="grid gap-4" onSubmit={saveClient}><div className="grid grid-cols-2 gap-3"><Input required placeholder="Client name *" value={form.name} onChange={(e) => setForm({ ...form, name: e.target.value })} /><Input placeholder="Company" value={form.company} onChange={(e) => setForm({ ...form, company: e.target.value })} /></div><Input required type="email" placeholder="Email *" value={form.email} onChange={(e) => setForm({ ...form, email: e.target.value })} /><div className="grid grid-cols-2 gap-3"><Input placeholder="Phone" value={form.phone} onChange={(e) => setForm({ ...form, phone: e.target.value })} /><Select value={form.status} onChange={(e) => setForm({ ...form, status: e.target.value as ClientStatus })}>{statuses.filter((status) => status !== 'all').map((status) => <option key={status} value={status}>{status}</option>)}</Select></div><Input placeholder="Address" value={form.address} onChange={(e) => setForm({ ...form, address: e.target.value })} /><Input placeholder="Tags, separated by commas" value={form.tags} onChange={(e) => setForm({ ...form, tags: e.target.value })} /><Textarea placeholder="Relationship notes" value={form.notes} onChange={(e) => setForm({ ...form, notes: e.target.value })} />{error && <p className="text-sm text-red-600">{error}</p>}<div className="flex justify-end gap-2"><Button type="button" variant="ghost" onClick={() => setOpen(false)}>Cancel</Button><Button type="submit">Create client</Button></div></form></DialogContent></Dialog></div>;
 }

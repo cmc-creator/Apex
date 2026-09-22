@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it } from 'vitest';
 import { mockData } from './data';
-import { emptyAppData, getAppData, resetAppData, updateClient } from './storage';
+import { createClient, emptyAppData, getAppData, resetAppData, updateClient } from './storage';
 
 const STORAGE_KEY = 'apex_crm_data';
 
@@ -88,4 +88,16 @@ describe('storage', () => {
     const persisted = JSON.parse(globalThis.localStorage.getItem(STORAGE_KEY) || '{}');
     expect(persisted.clients.find((c: { id: string; name: string }) => c.id === 'imported-client-1')?.name).toBe('Updated Name');
   });
+
+  it('creates and persists a client with a clean relationship history', () => {
+    const client = createClient({
+      name: 'Nyx Client', company: 'Nyx Studio', email: 'hello@nyx.test', phone: '', address: '', tags: ['priority'], notes: '', status: 'lead',
+    });
+
+    expect(client.name).toBe('Nyx Client');
+    expect(client.communicationHistory).toEqual([]);
+    expect(getAppData().clients).toHaveLength(1);
+    expect(getAppData().clients[0].id).toBe(client.id);
+  });
+
 });

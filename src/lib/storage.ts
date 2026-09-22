@@ -36,6 +36,34 @@ export function saveAppData(data: AppData): void {
   }
 }
 
+
+export function createClient(input: Omit<import('./types').Client, 'id' | 'createdAt' | 'lastContact' | 'totalRevenue' | 'communicationHistory'>): import('./types').Client {
+  const data = getAppData();
+  const today = new Date().toISOString();
+  const client = {
+    ...input,
+    id: `client-${crypto.randomUUID()}`,
+    createdAt: today,
+    lastContact: today,
+    totalRevenue: 0,
+    communicationHistory: [],
+  };
+  data.clients = [client, ...data.clients];
+  saveAppData(data);
+  return client;
+}
+
+export function deleteClient(id: string): AppData {
+  const data = getAppData();
+  if (data.projects.some((project) => project.clientId === id) || data.invoices.some((invoice) => invoice.clientId === id) || data.contracts.some((contract) => contract.clientId === id)) {
+    throw new Error('Remove or reassign this client’s linked projects, invoices, and agreements first.');
+  }
+  data.clients = data.clients.filter((client) => client.id !== id);
+  data.meetings = data.meetings.filter((meeting) => meeting.clientId !== id);
+  saveAppData(data);
+  return data;
+}
+
 export function updateClient(id: string, updates: Partial<import('./types').Client>): AppData {
   const data = getAppData();
   data.clients = data.clients.map(c => c.id === id ? { ...c, ...updates } : c);
