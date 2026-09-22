@@ -3,10 +3,15 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --canvas: #f8f7f4;
+  --ink: #262624;
+  --muted: #6f6d67;
+  --line: #e8e5df;
+  --brand: #365d59;
+  --brand-soft: #e9f0ee;
+  --peach: #f7e6d5;
 }
 
-body {
-  background: #f9fafb;
-}
+* { box-sizing: border-box; }
+body { background: var(--canvas); color: var(--ink); }
+::selection { background: #cfe0dc; }

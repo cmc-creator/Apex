@@ -1,7 +1,7 @@
 'use client';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
-import { LayoutDashboard, Users, FolderKanban, FileText, FileCheck, Calendar, TrendingUp, Globe, Settings, Zap, Rocket } from 'lucide-react';
+import { LayoutDashboard, Users, FolderKanban, FileText, FileCheck, Calendar, TrendingUp, Globe, Settings, Sparkles, Rocket } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
 const navItems = [
@@ -19,13 +19,13 @@ const navItems = [
 export default function Sidebar() {
   const pathname = usePathname();
   return (
-    <aside className="fixed inset-y-0 left-0 w-64 bg-indigo-900 flex flex-col z-30">
+    <aside className="fixed inset-y-0 left-0 w-64 bg-[#243a38] flex flex-col z-30">
       <div className="p-6">
         <Link href="/" className="flex items-center gap-2">
-          <div className="w-8 h-8 bg-indigo-400 rounded-lg flex items-center justify-center">
-            <Zap className="w-5 h-5 text-white" />
+          <div className="w-8 h-8 bg-[#e9cbae] rounded-lg flex items-center justify-center">
+            <Sparkles className="w-5 h-5 text-[#243a38]" />
           </div>
-          <span className="text-white text-xl font-bold">Apex CRM</span>
+          <span className="text-white text-xl font-bold">Apex</span>
         </Link>
       </div>
       <nav className="flex-1 px-3 pb-4 space-y-1">
@@ -38,8 +38,8 @@ export default function Sidebar() {
               className={cn(
                 'flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium transition-colors',
                 active
-                  ? 'bg-indigo-700 text-white'
-                  : 'text-indigo-200 hover:bg-indigo-800 hover:text-white'
+                  ? 'bg-white/15 text-white'
+                  : 'text-[#c9d6d3] hover:bg-white/10 hover:text-white'
               )}
             >
               <Icon className="w-5 h-5 shrink-0" />
@@ -48,21 +48,21 @@ export default function Sidebar() {
           );
         })}
       </nav>
-      <div className="p-3 border-t border-indigo-800">
+      <div className="p-3 border-t border-white/10">
         <Link
           href="/settings"
-          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-indigo-200 hover:bg-indigo-800 hover:text-white transition-colors"
+          className="flex items-center gap-3 px-3 py-2.5 rounded-lg text-sm font-medium text-[#c9d6d3] hover:bg-white/10 hover:text-white transition-colors"
         >
           <Settings className="w-5 h-5" />
           Settings
         </Link>
         <div className="flex items-center gap-3 px-3 py-2.5 mt-1">
-          <div className="w-8 h-8 rounded-full bg-indigo-600 flex items-center justify-center text-white text-sm font-medium">
+          <div className="w-8 h-8 rounded-full bg-[#4e7772] flex items-center justify-center text-white text-sm font-medium">
             JD
           </div>
           <div>
-            <p className="text-white text-sm font-medium">John Doe</p>
-            <p className="text-indigo-300 text-xs">Freelancer</p>
+            <p className="text-white text-sm font-medium">Your workspace</p>
+            <p className="text-[#aec3bf] text-xs">Client operations</p>
           </div>
         </div>
       </div>
