@@ -19,10 +19,10 @@ export default function SettingsPage() {
   }
 
   return <div className="flex-1">
-    <Header title="Workspace settings" subtitle="Prepare Apex for your own client operations." />
+    <Header title="Workspace settings" subtitle="Prepare NyxApex for your own client operations." />
     <main className="max-w-4xl p-6 space-y-6">
       <Card className="border-[#dce7e4] bg-[#f2f7f5] shadow-none">
-        <CardHeader><CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-[#365d59]" /> Data readiness</CardTitle><CardDescription>Apex currently stores records only in this browser. Nothing is shared or backed up until a hosted data layer is added.</CardDescription></CardHeader>
+        <CardHeader><CardTitle className="flex items-center gap-2"><ShieldCheck className="h-5 w-5 text-[#365d59]" /> Data readiness</CardTitle><CardDescription>NyxApex currently stores records only in this browser. Nothing is shared or backed up until a hosted data layer is added.</CardDescription></CardHeader>
         <CardContent className="flex flex-wrap gap-3"><Button className="bg-[#365d59] hover:bg-[#294b47]"><Download className="mr-2 h-4 w-4" /> Import clients (coming next)</Button><Button variant="outline"><DatabaseZap className="mr-2 h-4 w-4" /> Connect data storage (coming next)</Button></CardContent>
       </Card>
       <Card className="border-[#eed6c5]">
