@@ -4,8 +4,8 @@ import Sidebar from '@/components/Sidebar';
 import AIAssistant from '@/components/AIAssistant';
 
 export const metadata: Metadata = {
-  title: 'Apex CRM - Freelancer Management',
-  description: 'Complete CRM for freelancers',
+  title: 'NyxApex — Client Operating System',
+  description: 'A premium client operating system for modern service businesses',
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
